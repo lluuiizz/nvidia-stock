@@ -7,6 +7,15 @@ def main():
     df_training = df.head(int(length * 0.8))
     df_testing  = df.tail(int(length * 0.2))
 
+
+    # Normalizes volume into 0 - 1 interval
+    vol_max = df_training['last_volume'].max()
+    vol_min = df_training['last_volume'].min()
+
+    df_training['last_volume'] = (df_training['last_volume'] - vol_min) / (vol_max - vol_min)
+    df_testing ['last_volume'] = (df_testing['last_volume'] - vol_min) / (vol_max - vol_min)
+
+    # Feature Variables for Training and Testing
     X_training = df_training[['open', 'last_high', 'last_low', 'last_close', 'last_volume']]
     X_testing  = df_testing [['open', 'last_high', 'last_low', 'last_close', 'last_volume']]
 
@@ -64,10 +73,6 @@ def parse_data_stock():
     shifted_features = df[['open', 'high', 'low', 'close', 'volume']].shift(1).add_prefix('last_')
     df = (pd.concat([df, shifted_features], axis=1)).dropna()
     
-    # Normalizes volume into 0 - 1 interval
-    vol_max = df['last_volume'].max()
-    vol_min = df['last_volume'].min()
-    df['last_volume'] = (df['last_volume'] - vol_min) / (vol_max - vol_min)
     return df
 
 if __name__ == "__main__":
